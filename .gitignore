@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+
+*.exe
+*.ilk
+*.pdb
+.vscode/*

@@ -28,7 +28,23 @@ forward 61111 192.168.1.1 22
 )");
 }
 
-#include <network.hpp>
+#include "network.hpp"
+
+#ifdef _WIN32
+using network::socklen_t;
+#else
+inline void closesocket(int fd)
+{
+	close(fd);
+}
+
+inline int ioctlsocket(int fd, unsigned long int arg, u_long *val)
+{
+	return ioctl(fd, arg, val);
+}
+
+#endif
+
 std::map<network::socket_fd, network::socket_fd> fdmap;
 
 int NewForward(const char *remoteaddr, int remoteport)
@@ -60,7 +76,7 @@ void Forward(int localport, const char *remoteaddr, int remoteport)
 	int count, size;
 	unsigned int i;
 	sockaddr_in clientaddr;
-	network::socklen_t addrlen = sizeof(clientaddr);
+	socklen_t addrlen = sizeof(clientaddr);
 
 	static constexpr int buffersize = 1024;
 	static char buf[buffersize];
@@ -94,7 +110,7 @@ void Forward(int localport, const char *remoteaddr, int remoteport)
 				if (cfd > maxfd)
 					maxfd = cfd;
 				if (tofd > maxfd)
-					maxfd = cfd;
+					maxfd = tofd;
 				FD_SET(cfd, &fdset);
 				FD_SET(tofd, &fdset);
 				for (i = 0; i < 1024; i++)
@@ -117,7 +133,6 @@ void Forward(int localport, const char *remoteaddr, int remoteport)
 			else
 			{
 				closesocket(cfd);
-				Println(WSAGetLastError());
 			}
 		}
 		i = 0;
@@ -135,6 +150,22 @@ void Forward(int localport, const char *remoteaddr, int remoteport)
 					{
 						closesocket(fdmap.at(cfd));
 						closesocket(cfd);
+						for (i = 0; i < 1024; i++)
+						{
+							if (clientfdlist[i] == fdmap.at(cfd))
+							{
+								clientfdlist[i] = 0;
+								break;
+							}
+						}
+						for (i = 0; i < 1024; i++)
+						{
+							if (clientfdlist[i] == cfd)
+							{
+								clientfdlist[i] = 0;
+								break;
+							}
+						}
 						FD_CLR(fdmap.at(cfd), &fdset);
 						FD_CLR(cfd, &fdset);
 						fdmap.erase(fdmap.at(cfd));
