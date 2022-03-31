@@ -58,7 +58,7 @@ int NewForward(const char *remoteaddr, int remoteport)
 void Forward(int localport, const char *remoteaddr, int remoteport)
 {
 	Println(localport, remoteaddr, remoteport);
-	network::tcp::Server server("127.0.0.1", localport);
+	network::tcp::Server server("0.0.0.0", localport);
 	if (!server.Listen())
 	{
 		Println(server.Errno());
