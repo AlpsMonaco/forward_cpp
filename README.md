@@ -1,10 +1,11 @@
 # forward_cpp
-A tcp forward tools implaments with select.
+A TCP forward tools.
 
 ##
 The code uses select to poll both size in one fdset.  
 Work in both Unix/Windows system.  
-
+If you have boost lib,consider using boost/main.cpp instead,
+it is more C++ style and mostly faster than select.
 
 ## compile
 This code could be compiled both in Unix/Windows os.  
