@@ -2,12 +2,12 @@
 A TCP forward tools.
 
 ##
-This is a tcp port forward tool.
-If you have boost lib,it is highly recommand using
-forward-boost.cpp,which implemented with boost::asio
-and faster than select.
-forward.cpp implemented with select,works in most of
-circumstance.
+This is a tcp port forward tool.  
+If you have boost lib,it is highly recommand using  
+forward-boost.cpp,which implemented with boost::asio  
+and faster than select.  
+forward.cpp implemented with select,works in most of  
+circumstance.  
 
 ## compile
 This code could be compiled both in Unix/Windows os.  
